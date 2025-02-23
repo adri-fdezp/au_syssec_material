@@ -29,19 +29,24 @@ except (binascii.Error, json.JSONDecodeError) as e:
     print(f"Decoding error: {e}")
     exit()
 
-# Decode the Base64 message with padding fix
-try:
-    msg_base64 = fix_padding(data["msg"])  # Ensure correct padding
-    decoded_msg = binascii.unhexlify(msg_base64).decode()
-except binascii.Error as e:
-    print(f"Base64 decoding error: {e}")
-    exit()
-
-# Modify the grade from "7" to "12"
-new_msg = decoded_msg.replace("02", "12")
+# Replace the message with your custom message
+new_msg = "You get a get a 12 in System Security. I am very proud of you."
 
 # Convert new message to hex
 new_msg_hex = binascii.hexlify(new_msg.encode()).decode()
 
-# Print new forged message
-print(f"New Forged Message: {new_msg}")
+# Update the JSON data
+data["msg"] = new_msg_hex
+
+# Encode the updated JSON data back to Base64
+encoded_data = base64.urlsafe_b64encode(json.dumps(data).encode()).decode().rstrip("=")
+
+# Set the new cookie
+cookies = {"grade": encoded_data}
+
+# Disable redirects
+response = requests.get(url, cookies=cookies, allow_redirects=False)
+if response.status_code == 200:
+    print("Successfully updated the cookie with the new message.")
+else:
+    print("Failed to update the cookie. Status code:", response.status_code)
