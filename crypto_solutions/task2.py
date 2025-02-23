@@ -5,7 +5,7 @@ import requests
 
 url = "http://127.0.0.1:5000/"
 
-# Get the auth token cookie
+# Get the cookie
 response = requests.get(url)
 if response.status_code == 200:
     grade_cookie = response.cookies.get("grade")
@@ -44,7 +44,7 @@ encoded_data = base64.urlsafe_b64encode(json.dumps(data).encode()).decode().rstr
 # Set the new cookie
 cookies = {"grade": encoded_data}
 
-# Disable redirects
+
 response = requests.get(url, cookies=cookies, allow_redirects=False)
 if response.status_code == 200:
     print("Successfully updated the cookie with the new message.")

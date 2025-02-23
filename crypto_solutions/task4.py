@@ -1,26 +1,38 @@
 import base64
 import json
 import binascii
+import requests
 
-cookie_value = "eyJtc2ciOiAiNTk2Zjc1MjA2NzY1NzQyMDYxMjA2ZjZlNmM3OTIwNjc2NTc0MjA2MTIwMzAzMDIwNjk2ZTIwNTM3OTczNzQ2NTZkNzMyMDUzNjU2Mzc1NzI2OTc0NzkyZTIwNDkyMDYxNmQyMDc2NjU3Mjc5MjA2NDY5NzM2MTcwNzA2ZjY5NmU3NDY1NjQyMDYyNzkyMDc5NmY3NTJlIiwgImNpcGhlcnRleHQiOiAiYzhjYjVkMTQ1MzkyMGQ5OWUxYjBiMTg5YmJhZjdhYmY1NDE2OGZmNmNmNmZkZGFhYzExMWQ3ZTFiNTcwNDgzYmExNTc2YjNlMTFmZjVmMDc5NjNhZjhkYjgwY2YxYjI4YzNjNTAzZmJhMzMzNWRjNmYwNDBlYmRhNjM4Nzg2MjQ3MGYzY2FjOGU2ZTcyMmJkZjJlYjQ3YjdjMDUyNTZjMTY5ZGNhOGM1MTg4MmM2ZjU0YzIyMmNkM2Q3NjIyZDU3MWJiODA0M2U5YjU5ZmNjZmIwZDhkYzA2MTRlOGZhMGUyZWY3MTY3YzMxYjU1MzNkZjYxYzhmOTZlMGExM2RjYWRjMTlkYWNiNWUwZmJmYzQwMGRkYjAzY2UwMTE3NmVjMDcwMzY1N2FiNzM4YmU5NjYyOGEwOWE0Y2NhZWIxOTY3NWRiN2RjMGI2ZGE4ODk5MzU0MTU4MDFmNTk2NzlmNTc1MWJlMzJiMTI2ZjFlNjE0ZjU4MDIzYWRkZWJkNmQwMTcyOWU5ODU3MDI4NDkyY2Y0Y2JjYTQ5NDUwOWNlYzYzMjI5MWU5ZTEyYWFmNWRiODUxOTMzODFhNjMxYTJhMjRhOWJmM2RmMzJhNzFlODk3OTNiY2NhOWI1NmU4OGNlOWI1NTA5ZTYwMjYwOTQ4ODJiZTZhNzNjMDVmZTE3ODQxMjc0Nzc5OWEyMWNmZmZmMzgwYzA0NDc1MmY2MzU1MzZiNmZhMjQwMDJhYmQzZTJmMDYzMDAwOGVmOTY4N2U1MjBkYWM4MDE0NmUwOGVkNjhmOGY1NjI0MzBmMmRhNmJlZTdhOTFmOTZmNGVmMmYyNjJiNzY5NTZjOThlMGMxMDc1Mzk4MGM1OTczMWRmNTlkN2FjMWNmZjlkZGMxMDk4MTIwN2EzOTcyNjRkMzYyZTZhODIyYzlkYzg1NjdkMmMwZWZlYjBhMTZkNjliMGM3OGU5NjMwZDQwMDI2ZDlkNzc0MWY4MzVjZGI3NzMzZjBlNjE2MGM0YjRkOWM5ZGM3YmI3NTc1MzcwNGJhMjgxYjkxOTNhYTg5OWJmM2NmNjkzNDRhNjJkMzBiZjIzNzA1OWM0OTdmM2I1ZDliZmZmYmI0YjNjNzM1YmZkM2MzOGVmZjZjODIyYWE1N2FiZWNjZDBiYjJlYzQzYTMyMGJlYjJhMzY3OGE3NjBjNDg1ZmEyZmY0Zjk2YmUyYjEyMWRlYzA4ODA2NzhmMzFjOWQxZjljN2QyN2UxNWY2NjhmMzNmMTBmZTNjOTY2OWYxY2EzYWI5NjA0ZDkyNmVjOGIyM2E5NmNhZWE3YzEzMWNkYjI0MzE5YTI2NjFkZGEzNmZkMzdjMTA5MjdhMTM2ZTMyMyJ9"
+url = "http://127.0.0.1:5000/"
+
+# Get the cookie
+response = requests.get(url)
+if response.status_code == 200:
+    grade_cookie = response.cookies.get("grade")
+    if not grade_cookie:
+        print("Grade not found in the cookies.")
+        exit()
+    print("Grade retrieved")
+else:
+    print("Failed to retrieve the URL. Status code:", response.status_code)
+    exit()
 
 # Decode Base64
-decoded_bytes = base64.b64decode(cookie_value)
+decoded_bytes = base64.b64decode(grade_cookie)
 
 # Interpret as JSON
 try:
     decoded_json = json.loads(decoded_bytes)
 except json.JSONDecodeError:
-    decoded_json = decoded_bytes.decode(errors="ignore")  # Si falla, solo devolver como string
-
-print(decoded_json)
+    decoded_json = decoded_bytes.decode(errors="ignore")
 
 # Decode the message
-msg_hex = "596f75206765742061206f6e6c7920676574206120303020696e2053797374656d732053656375726974792e204920616d2076657279206469736170706f696e74656420627920796f752e"
+msg_hex = decoded_json.get('msg')
 msg_text = bytes.fromhex(msg_hex).decode()
-print(msg_text)
+print("Original msg:", msg_text)
 
-new_msg = msg_text.replace("00", "12")
+# Create new msg 
+new_msg = "You get a get a 12 in System Security. I am very proud of you."
 
 # Convert new message to bytes and hex
 new_msg_bytes = new_msg.encode()
@@ -38,3 +50,4 @@ modified_cookie_base64 = base64.b64encode(modified_cookie_json.encode()).decode(
 
 # Print the new cookie
 print("New cookie:", modified_cookie_base64)
+
