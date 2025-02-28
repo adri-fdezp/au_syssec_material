@@ -45,7 +45,7 @@ encoded_data = base64.urlsafe_b64encode(json.dumps(data).encode()).decode().rstr
 cookies = {"grade": encoded_data}
 
 
-response = requests.get(url, cookies=cookies, allow_redirects=False)
+response = requests.get(url, cookies=cookies, verify=False, allow_redirects=False)
 if response.status_code == 200:
     print("Successfully updated the cookie with the new message.")
 else:

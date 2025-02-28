@@ -1,6 +1,5 @@
 import requests
 from Crypto.Util.number import bytes_to_long, long_to_bytes
-import math
 
 # Endpoint URLs
 URL_endpoint = "http://127.0.0.1:5000/pk"
@@ -11,8 +10,8 @@ response = requests.get(URL_endpoint)
 if response.status_code == 200:
     public_key = response.json()
     print("Public key retrieved")
-    N = int(public_key.get('N'))  # RSA modulus
-    E = int(public_key.get('e'))  # RSA public exponent
+    N = int(public_key.get('N')) 
+    E = int(public_key.get('e'))  
 else:
     print("Error: Unable to fetch public key")
     exit()
@@ -32,7 +31,7 @@ else:
 # Convert auth_token to an integer
 auth_token_int = bytes_to_long(bytes.fromhex(auth_token))
 
-# Function to check if the token is valid (Oracle)
+# Function to check if the token is valid
 def is_valid_token(token):
     cookies = {'authtoken': token}
     response = requests.get(URL_auth, cookies=cookies)
